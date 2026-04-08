@@ -1,5 +1,6 @@
 services:
   gitnexus-gateway:
+    image: funtuan/gitnexus-gateway:latest
     build: .
     container_name: gitnexus-gateway
     restart: unless-stopped

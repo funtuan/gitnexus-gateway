@@ -30,7 +30,7 @@ docker run -d \
   -e CORS="*" \
   -v /path/to/your/local/repos:/data \
   -v gitnexus-registry:/home/node/.gitnexus \
-  your-dockerhub-username/gitnexus-gateway:latest
+  funtuan/gitnexus-gateway:latest
 ```
 
 ## Docker Compose
@@ -40,7 +40,7 @@ Save this as `docker-compose.yml` and run `docker compose up -d`:
 ```yaml
 services:
   gitnexus-gateway:
-    image: your-dockerhub-username/gitnexus-gateway:latest
+    image: funtuan/gitnexus-gateway:latest
     container_name: gitnexus-gateway
     restart: unless-stopped
     ports:
