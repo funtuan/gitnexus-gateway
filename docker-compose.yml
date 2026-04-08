@@ -1,0 +1,35 @@
+services:
+  gitnexus-gateway:
+    build: .
+    container_name: gitnexus-gateway
+    restart: unless-stopped
+    ports:
+      - "8010:8010"
+    volumes:
+      - /path/to/your/repos:/data:rw
+      - gitnexus-registry:/home/node/.gitnexus
+    environment:
+      - PORT=8010
+      - PUID=1000
+      - PGID=1000
+      - TZ=Asia/Taipei
+      - NODE_ENV=production
+      - PROTOCOL=SHTTP
+      # Repository Analysis
+      - DATA_DIR=/data
+      - ANALYZE_FORCE=false
+      - ANALYZE_VERBOSE=false
+      # Optional: require Bearer token auth
+      # - API_KEY=replace-with-strong-secret
+      # Optional: CORS
+      # - CORS=*
+      # Optional: Wiki generation (requires LLM API key)
+      # - WIKI_ENABLED=true
+      # - OPENAI_API_KEY=sk-...
+      # - WIKI_MODEL=gpt-4o
+    hostname: gitnexus-gateway
+    domainname: local
+
+volumes:
+  gitnexus-registry:
+    driver: local
