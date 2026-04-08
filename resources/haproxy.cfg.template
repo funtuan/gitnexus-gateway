@@ -23,8 +23,7 @@ frontend mcp_frontend
 
     # Route ACLs
     acl is_mcp_path path_beg /mcp
-    acl is_sse_path path_beg /sse
-    acl is_ws_path path_beg /message
+    acl is_api_path path_beg /api
 
     # Define ACL that's always false (for CORS disabled scenario)
     acl always_false always_false
@@ -51,16 +50,17 @@ frontend mcp_frontend
     http-response set-header X-Content-Type-Options "nosniff"
     http-response set-header X-Frame-Options "DENY"
 
-    # Route: MCP protocol and health check -> Supergateway
+    # Route: MCP protocol and health check -> native GitNexus HTTP server
     use_backend mcp_backend if is_mcp_path
-    use_backend mcp_backend if is_sse_path
-    use_backend mcp_backend if is_ws_path
+    use_backend mcp_backend if is_api_path
     use_backend mcp_backend if is_health_check
 
     # Default backend
     default_backend mcp_backend
 
-# Backend - Supergateway MCP server
+# Backend - native GitNexus HTTP server
 backend mcp_backend
     balance roundrobin
+    http-request set-path /api/mcp if { path -m str /mcp }
+    http-request set-path /api/info if { path -m str /healthz }
     server __SERVER_NAME__ 127.0.0.1:__INTERNAL_PORT__ check

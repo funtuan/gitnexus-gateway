@@ -9,6 +9,6 @@ if [[ -f "$ANALYSIS_LOCK" ]]; then
     exit 0
 fi
 
-# After startup, check the real /healthz endpoint on Supergateway
+# After startup, check the native GitNexus HTTP server
 INTERNAL_PORT="${INTERNAL_PORT:-38011}"
-curl -sf "http://127.0.0.1:${INTERNAL_PORT}/healthz" >/dev/null 2>&1
+curl -sf "http://127.0.0.1:${INTERNAL_PORT}/api/info" >/dev/null 2>&1

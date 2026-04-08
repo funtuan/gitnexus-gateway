@@ -1,6 +1,6 @@
 # ==============================================================================
 # GitNexus Gateway - Docker Image
-# Packages gitnexus NPM package with HAProxy for API Key auth & CORS
+# Packages GitNexus with HAProxy for API Key auth & CORS
 # ==============================================================================
 
 ARG BASE_IMAGE=node:22-trixie-slim
@@ -27,11 +27,9 @@ RUN apt-get update && \
     python3 make g++ && \
     rm -rf /var/lib/apt/lists/*
 
-# Install gitnexus, supergateway, then strip build tools in one layer
+# Install gitnexus, then strip build tools in one layer
 RUN echo "Installing gitnexus@${GITNEXUS_VERSION}..." && \
     npm install -g "gitnexus@${GITNEXUS_VERSION}" --omit=dev --no-audit --no-fund --loglevel error && \
-    echo "Installing supergateway..." && \
-    npm install -g supergateway@latest --omit=dev --no-audit --no-fund --loglevel error && \
     # Optimize: strip debug symbols from native modules
     find /usr/local/lib/node_modules -name '*.node' -exec strip --strip-debug {} + 2>/dev/null || true && \
     # Remove unnecessary files from node_modules

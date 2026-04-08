@@ -415,30 +415,20 @@ run_gitnexus_wiki() {
 }
 
 start_mcp_server() {
-    local mcp_server_cmd="gitnexus mcp"
     local CMD_ARGS
 
     case "${PROTOCOL^^}" in
-        SHTTP|STREAMABLEHTTP)
-            CMD_ARGS=(npx --yes supergateway --port "$INTERNAL_PORT" --streamableHttpPath /mcp --outputTransport streamableHttp --healthEndpoint /healthz --stdio "$mcp_server_cmd")
-            PROTOCOL_DISPLAY="SHTTP/streamableHttp"
-            ;;
-        SSE)
-            CMD_ARGS=(npx --yes supergateway --port "$INTERNAL_PORT" --ssePath /sse --outputTransport sse --healthEndpoint /healthz --stdio "$mcp_server_cmd")
-            PROTOCOL_DISPLAY="SSE/Server-Sent Events"
-            ;;
-        WS|WEBSOCKET)
-            CMD_ARGS=(npx --yes supergateway --port "$INTERNAL_PORT" --messagePath /message --outputTransport ws --healthEndpoint /healthz --stdio "$mcp_server_cmd")
-            PROTOCOL_DISPLAY="WS/WebSocket"
+        SHTTP|STREAMABLEHTTP|'')
             ;;
         *)
-            echo "Invalid PROTOCOL='${PROTOCOL}', using default ${DEFAULT_PROTOCOL}"
-            CMD_ARGS=(npx --yes supergateway --port "$INTERNAL_PORT" --streamableHttpPath /mcp --outputTransport streamableHttp --healthEndpoint /healthz --stdio "$mcp_server_cmd")
-            PROTOCOL_DISPLAY="SHTTP/streamableHttp"
+            echo "Warning: PROTOCOL='${PROTOCOL}' is not supported by the native GitNexus HTTP server; using StreamableHTTP via /api/mcp" >&2
             ;;
     esac
 
-    echo "Launching GitNexus Gateway with protocol: ${PROTOCOL_DISPLAY}"
+    CMD_ARGS=(gitnexus serve --host 0.0.0.0 --port "$INTERNAL_PORT")
+    PROTOCOL_DISPLAY="HTTP + MCP-over-StreamableHTTP"
+
+    echo "Launching GitNexus native HTTP server with shared multi-repo backend"
 
     if [ "$(id -u)" -eq 0 ]; then
         gosu node "${CMD_ARGS[@]}" &
